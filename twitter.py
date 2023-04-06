@@ -23,6 +23,38 @@ credentials = {
 }
 
 
+# ###################################################################
+# ARGUMENTS PARSING
+# ###################################################################
+
+# we add an argument parser to detect whether we want to save it in
+# a MongoDB or a local .json
+parser = argparse.ArgumentParser(
+    description='Store some Twitter data: both locally or in a '
+                'MongoDB database if --mongodb or -mdb is flagged')
+parser.add_argument(
+    '-mdb', '--mongodb', action='store_true',
+    help='If activated, the tweet data is stored in a MongoDB '
+         'database instead of a local .json')
+# now the 'mongodb' state is added as local variable in the
+# args namespace (by default, set to False)
+args = parser.parse_args()
+# the variable can be accessed as vars(args)['mongodb']
+use_mongodb = vars(args)['mongodb']
+
+if use_mongodb:
+    # connect with the local mongodb and create a database
+    # and collection for tweets
+    import pymongo
+    client = pymongo.MongoClient('mongodb://mongo:27017/')
+    db = client["twitterdb"]
+    tweets_collection = db["tweets"]
+
+
+# ###################################################################
+# CLASS DEFINITION
+# ###################################################################
+
 # we filter out unwanted data
 def process_tweet(tweet) -> dict:
     d = {
@@ -47,13 +79,16 @@ class MyStreamer(TwythonStreamer):
 
     # received data
     def on_success(self, data):
-
-        # Only collect tweets in English
+        # only collect tweets in English
         if data['lang'] == 'en':
             tweet_data = process_tweet(data)
-            self.save_to_csv(data)
+            if use_mongodb:
+                self.save_to_mongo(tweet_data)
+            else:
+                self.save_to_csv(tweet_data)
+
             self.count += 1
-            if self.count % 100 == 0:
+            if self.count % 50 == 0:
                 print("tweet received: " + str(self.count))
 
     # problem with the API
@@ -68,33 +103,19 @@ class MyStreamer(TwythonStreamer):
             json.dump(tweet, fp)
             fp.write("\n")
 
+    # save tweets to mongodb
+    @staticmethod
+    def save_to_mongo(tweet):
+        tweets_collection.insert(tweet)
+
 
 # ###################################################################
 # MAIN EXECUTION
 # ###################################################################
 
-# we add an argument parser to ex
-parser = argparse.ArgumentParser(
-    description='Store some Twitter data: both locally or in a '
-                'MongoDB database if --mongo is flagged')
-parser.add_argument(
-    '-mdb', '--mongodb', action='store_true',
-    help='If activated, the tweet data is stored in a MongoDB '
-         'database instead of a local .json')
-# now the 'mongodb' state is added as local variable in the
-# args namespace (by default, set to False)
-args = parser.parse_args()
-# the variable can be accessed as vars(args)['mongodb']
-
-# Instantiate from our streaming class
+# instantiate our streaming class
 stream = MyStreamer(credentials['CONSUMER_KEY'],
                     credentials['CONSUMER_SECRET'],
                     credentials['ACCESS_TOKEN'], credentials['ACCESS_SECRET'])
 # start the stream
 stream.statuses.filter(track='corona')
-
-if vars(args)['mongodb']:
-    raise Exception("Storing the tweet data into a MongoDB "
-                    "database is still not implemented")
-else:
-    print("Initializing the MyStreamer")

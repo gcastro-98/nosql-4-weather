@@ -1,0 +1,16 @@
+version: '1.0'
+
+services:
+  mongo:
+    image: 'mongo'
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongovol:/data/db
+  twitter:
+    image: 'gerardc98/twitter-scraping'
+    container_name: twitter
+volumes:
+  mongovol:
+    driver: local

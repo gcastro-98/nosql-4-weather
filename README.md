@@ -26,12 +26,28 @@ Then, to Dockerize an app it is trivial, since it is needed to:
 If the Python code is executed as ``python twitter.py`` then the tweet 
 data is stored locally in a .json; while if the code is executed with 
 the ``-mdb`` flag (or ``--mongodb`` tag), it is then stored in a 
-MongoDB database.
+MongoDB database: ``python twitter.py -mdb``.
+
+The image can be built by typing:
+
+```bash
+docker build -t twitter-scrapping .
+```
 
 ### Publish the docker image of your app in docker hub in your account
 
 The docker image can be found at: 
+[DockerHub](https://hub.docker.com/repository/docker/gerardc98/twitter-scrapping)
+
+It was pushed by @gcastro-98 simply by doing:
+```bash
+docker push twitter-scrapping
+```
 
 ### Change the app to store data in mongoDb. Run the app with mongoDB (using images from docker-hub) using docker-compose
 
-To run ...
+To run the multi-containers setup it is enough with typing:
+
+```bash
+docker-compose up -d
+```
