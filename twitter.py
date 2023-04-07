@@ -50,6 +50,33 @@ for index, row in df.iterrows():
         'created_at': datetime.now(),
         'weather': response
     }
-    
+ 
+# ###################################################################
+# ARGUMENTS PARSING
+# ###################################################################
+
+# we add an argument parser to detect whether we want to save it in
+# a MongoDB or a local .json
+parser = argparse.ArgumentParser(
+    description='Store some Weather data: both locally or in a '
+                'MongoDB database if --mongodb or -mdb is flagged')
+parser.add_argument(
+    '-mdb', '--mongodb', action='store_true',
+    help='If activated, the tweet data is stored in a MongoDB '
+         'database instead of a local .json')
+# now the 'mongodb' state is added as local variable in the
+# args namespace (by default, set to False)
+args = parser.parse_args()
+# the variable can be accessed as vars(args)['mongodb']
+use_mongodb = vars(args)['mongodb']
+
+if use_mongodb:
+    # connect with the local mongodb and create a database
+    # and collection for weather data
+    import pymongo
+    client = pymongo.MongoClient('mongodb://mongo:27017/')
+    db = client["twitterdb"]
+    tweets_collection = db["tweets"]
+
     # Insert document into MongoDB collection
     collection.insert_one(document)
