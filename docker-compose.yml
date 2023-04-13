@@ -8,9 +8,9 @@ services:
       - '27017:27017'
     volumes:
       - mongovol:/data/db
-  twitter:
-    image: 'gerardc98/twitter-scraping'
-    container_name: twitter
+  weather:
+    image: 'gerardc98/nosql-4-weather'
+    container_name: weather
 volumes:
   mongovol:
     driver: local

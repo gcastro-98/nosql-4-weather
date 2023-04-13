@@ -11,10 +11,8 @@ __pycache__/
 .vscode/
 
 # Twitter's API keys
-.consumer_key
-.consumer_secret
-.access_secret
-.access_token
+.api_key
+.api_host
 
 # Distribution / packaging
 .Python
