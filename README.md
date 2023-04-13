@@ -34,10 +34,24 @@ docker build -t nosql-4-weather .
 
 The docker image can be found at: 
 [DockerHub](https://hub.docker.com/repository/docker/gerardc98/nosql-4-weather)
-
-It was pushed by @gcastro-98 simply by doing:
+It was originally pushed, after building the image from the Dockerfile, 
+by typing:
 ```bash
-docker push nosql-4-weather
+docker tag nosql-4-weather gerardc98/nosql-4-weather
+docker push gerardc98/nosql-4-weather
+```
+
+A container can be locally ran by typing:
+```bash
+docker run -it --name test-nosql nosql-4-weather
+```
+
+**Note** it will not work unless a MongoDB instance is running 
+on localhost at port 27017! It is needless to remind this can 
+be done by running:
+
+```bash
+docker run -d -p 27017:27017 -v /path/to/local/folder:/data/db mongo
 ```
 
 ### Change the app to store data in mongoDb. Run the app with mongoDB (using images from docker-hub) using docker-compose

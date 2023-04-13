@@ -25,12 +25,8 @@ _headers = {
 
 
 def get_cities_weather_documents_list() -> List[dict]:
-    # Weather API credentials and endpoint
-    # endpoint = "http://api.weatherapi.com/v1/current.json?key={api_key}&q={city},{zip_code}"
-
     # Read CSV into pandas dataframe
     df = pd.read_csv('cities_metada.csv', sep=';')
-
     document_list: List[dict] = []
 
     # Iterate over dataframe and call API for each city/zip
@@ -74,14 +70,20 @@ use_mongodb = vars(args)['mongodb']
 if use_mongodb:
     # connect with the local mongodb and create a database
     # and collection for weather data
-    import pymongo
-    client = pymongo.MongoClient('mongodb://mongo:27017/')
+    from pymongo import MongoClient
+    from pymongo.errors import ServerSelectionTimeoutError
+    client = MongoClient('mongodb://localhost:27017/')
     db = client["weatherdb"]
     weather_collection = db["city_weather"]
 
-    # insert documents into MongoDB collection
-    weather_collection.insert_many(get_cities_weather_documents_list())
-
+    try:
+        # insert documents into MongoDB collection
+        weather_collection.insert_many(get_cities_weather_documents_list())
+        print("Data succesfully added to the database!")
+    except ServerSelectionTimeoutError as error:
+        print("There was a problem when adding data to the db! Check whether "
+              "there is a local database instance accessible through port "
+              "27017. Below the error traceback is presented:", error)
 else:
     import json
     _documents: dict = {_i: _doc for _i, _doc in enumerate(
