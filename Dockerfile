@@ -1,4 +1,5 @@
 FROM python:3
-COPY twitter.py .
-RUN pip install twython pymongo
-CMD [ "python", "twitter.py", "-mdb"]
+COPY weather.py .
+COPY cities_metada.csv .
+RUN pip install pymongo
+CMD [ "python", "weather.py", "-mdb"]

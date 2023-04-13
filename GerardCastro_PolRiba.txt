@@ -1,1 +1,1 @@
-https://hub.docker.com/repository/docker/gerardc98/twitter-scrapping
+https://hub.docker.com/repository/docker/gerardc98/nosql-4-weather
