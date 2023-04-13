@@ -11,6 +11,10 @@ services:
   weather:
     image: 'gerardc98/nosql-4-weather'
     container_name: weather
+    links:
+      - mongodb
+    depends_on:
+        - mongodb
 volumes:
   mongovol:
     driver: local

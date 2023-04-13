@@ -72,7 +72,7 @@ if use_mongodb:
     # and collection for weather data
     from pymongo import MongoClient
     from pymongo.errors import ServerSelectionTimeoutError
-    client = MongoClient('mongodb://localhost:27017/')
+    client = MongoClient('mongodb://mongodb:27017/')
     db = client["weatherdb"]
     weather_collection = db["city_weather"]
 
